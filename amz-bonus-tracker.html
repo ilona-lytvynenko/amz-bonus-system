@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMZ Bonus Tracker · Vira Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF7;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F4F3ED;
+  --border: #E8E6DF;
+  --border-strong: #D0CEC5;
+  --text-primary: #0A0A0A;
+  --text-secondary: #595959;
+  --text-tertiary: #8A8881;
+
+  --brand-lime: #EEFF41;
+  --brand-lime-dark: #D8E83A;
+  --brand-orange: #FFAB40;
+  --brand-cyan: #0097A7;
+  --brand-blue: #4285F4;
+  --brand-gray: #78909C;
+
+  --bronze: #FFAB40;
+  --silver: #78909C;
+  --gold: #EEFF41;
+  --platinum: #4285F4;
+
+  --bronze-glow: rgba(255, 171, 64, 0.32);
+  --silver-glow: rgba(120, 144, 156, 0.22);
+  --gold-glow: rgba(238, 255, 65, 0.55);
+  --platinum-glow: rgba(66, 133, 244, 0.28);
+
+  --bronze-soft: rgba(255, 171, 64, 0.10);
+  --silver-soft: rgba(120, 144, 156, 0.08);
+  --gold-soft: rgba(238, 255, 65, 0.18);
+  --platinum-soft: rgba(66, 133, 244, 0.10);
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* === PERSISTENT LIME BRAND STRIP === */
+.brand-strip {
+  height: 8px;
+  background: var(--brand-lime);
+  width: 100%;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+  position: relative;
+  z-index: 2;
+}
+
+/* === HEADER === */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding: 0 4px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-lime);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.2;
+}
+
+.brand-text .brand-name {
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+
+.brand-text .brand-sub {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.22em;
+  font-weight: 500;
+}
+
+.admin-toggle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  cursor: pointer;
+  background: var(--brand-lime);
+  border: 1px solid var(--brand-lime);
+  padding: 9px 16px;
+  border-radius: 999px;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+
+.admin-toggle:hover {
+  background: var(--brand-lime-dark);
+  border-color: var(--brand-lime-dark);
+  transform: translateY(-1px);
+}
+
+/* === HERO === */
+.hero {
+  position: relative;
+  margin-bottom: 72px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--current-color, var(--brand-lime));
+  padding: 72px 48px 80px;
+  text-align: center;
+  transition: background 0.8s cubic-bezier(.2,.7,.2,1);
+  animation: fadeUp 0.9s cubic-bezier(.2,.7,.2,1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero[data-tier="gold"] { color: #0A0A0A; }
+.hero[data-tier="bronze"] { color: #2A1A05; }
+.hero[data-tier="silver"] { color: #FFFFFF; }
+.hero[data-tier="platinum"] { color: #FFFFFF; }
+.hero[data-tier="none"] { background: var(--bg-elevated); color: var(--text-primary); }
+
+/* Lime brand stamp — always visible regardless of tier color */
+.hero-stamp {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: var(--brand-lime);
+  color: #0A0A0A;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-stamp::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0A0A0A;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.hero-decoration {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.hero-decoration.top-left {
+  top: -80px;
+  left: -80px;
+  width: 280px;
+  height: 280px;
+}
+
+.hero-decoration.bottom-right {
+  bottom: -120px;
+  right: -120px;
+  width: 320px;
+  height: 320px;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 32px;
+  opacity: 0.75;
+}
+
+.hero-medal {
+  font-size: 96px;
+  line-height: 1;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: float 7s ease-in-out infinite;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.18));
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero-tier-name {
+  font-family: var(--font-display);
+  font-size: clamp(80px, 13vw, 168px);
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  margin-bottom: 28px;
+  font-variation-settings: "opsz" 96, "wdth" 100;
+}
+
+.hero-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.hero-meta b { font-weight: 700; opacity: 1; }
+.hero-meta-divider { display: inline-block; margin: 0 14px; opacity: 0.5; }
+
+/* === SECTION === */
+.section { margin-bottom: 64px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding: 0 4px;
+}
+
+.section-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-marker::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 4px;
+  background: var(--brand-lime);
+  border-radius: 2px;
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.section-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* === PROGRESS === */
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.progress-label {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 48, "wdth" 100;
+}
+
+.progress-label em {
+  font-style: normal;
+  color: var(--text-primary);
+  font-weight: 800;
+  background: var(--brand-lime);
+  padding: 0 12px;
+  border-radius: 8px;
+  display: inline-block;
+  line-height: 1.05;
+}
+
+.progress-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.progress-meta b { color: var(--text-primary); font-weight: 700; }
+
+.progress-bar-wrap { padding: 0 4px; }
+
+.progress-bar {
+  height: 10px;
+  background: var(--bg-elevated);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--brand-lime);
+  border-radius: 999px;
+  width: 0;
+  transition: width 1.4s cubic-bezier(.2,.7,.2,1) 0.4s;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--brand-lime);
+  box-shadow: 0 0 0 3px var(--bg), 0 0 16px var(--gold-glow);
+}
+
+/* === TIER GRID === */
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.tier-card {
+  position: relative;
+  padding: 32px 18px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(.2,.7,.2,1);
+  overflow: hidden;
+  animation: fadeUp 0.8s cubic-bezier(.2,.7,.2,1) both;
+}
+
+.tier-card:nth-child(1) { animation-delay: 0.1s; }
+.tier-card:nth-child(2) { animation-delay: 0.18s; }
+.tier-card:nth-child(3) { animation-delay: 0.26s; }
+.tier-card:nth-child(4) { animation-delay: 0.34s; }
+
+.tier-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--tier-color);
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+
+.tier-card.achieved .tier-card-accent { opacity: 1; }
+.tier-card.current .tier-card-accent { opacity: 1; height: 6px; }
+.tier-card.locked .tier-card-accent { opacity: 0.15; }
+
+.tier-card.achieved {
+  border-color: color-mix(in srgb, var(--tier-color) 40%, var(--border));
+}
+
+.tier-card.current {
+  border-color: var(--brand-lime);
+  box-shadow: 0 12px 36px -12px var(--gold-glow), 0 0 0 2px var(--brand-lime);
+  transform: translateY(-2px);
+}
+
+.tier-card.current::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 70% at top, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+
+.tier-card.locked { opacity: 0.48; }
+
+.tier-card-medal {
+  font-size: 40px;
+  margin-bottom: 14px;
+  display: inline-block;
+  transition: transform 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.tier-card.locked .tier-card-medal { filter: grayscale(0.9); }
+.tier-card:hover .tier-card-medal { transform: scale(1.1) rotate(-4deg); }
+
+.tier-card-name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.025em;
+  position: relative;
+  z-index: 1;
+  font-variation-settings: "opsz" 36, "wdth" 100;
+}
+
+.tier-card.locked .tier-card-name { color: var(--text-tertiary); }
+
+.tier-card-status {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  position: relative;
+  z-index: 1;
+}
+
+.tier-card.achieved .tier-card-status {
+  background: color-mix(in srgb, var(--tier-color) 18%, transparent);
+  color: var(--text-primary);
+}
+
+.tier-card.current .tier-card-status {
+  background: var(--brand-lime);
+  color: #0A0A0A;
+}
+
+.tier-card-reward {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.tier-card-reward b {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.tier-card[data-tier="bronze"]   { --tier-color: var(--bronze);   --tier-glow: var(--bronze-glow);   --tier-soft: var(--bronze-soft); }
+.tier-card[data-tier="silver"]   { --tier-color: var(--silver);   --tier-glow: var(--silver-glow);   --tier-soft: var(--silver-soft); }
+.tier-card[data-tier="gold"]     { --tier-color: var(--gold);     --tier-glow: var(--gold-glow);     --tier-soft: var(--gold-soft); }
+.tier-card[data-tier="platinum"] { --tier-color: var(--platinum); --tier-glow: var(--platinum-glow); --tier-soft: var(--platinum-soft); }
+
+/* === CALCULATOR === */
+.calculator {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  position: relative;
+}
+
+.calculator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 36px;
+  right: 36px;
+  height: 3px;
+  background: var(--brand-lime);
+  border-radius: 0 0 3px 3px;
+}
+
+.calc-input-group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.calc-input-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.calc-input-wrap { flex: 1; position: relative; }
+
+.calc-input-prefix {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 26px;
+  pointer-events: none;
+}
+
+.calc-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px 16px 40px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  outline: none;
+  transition: all 0.2s;
+  font-variation-settings: "opsz" 32, "wdth" 100;
+}
+
+.calc-input:focus {
+  border-color: var(--brand-lime);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.calc-input::-webkit-inner-spin-button,
+.calc-input::-webkit-outer-spin-button { display: none; }
+
+.calc-rows { display: flex; flex-direction: column; gap: 6px; }
+
+.calc-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.calc-hint b {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.calc-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 60px auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.calc-row.current {
+  background: var(--gold-soft);
+  border-color: var(--brand-lime);
+}
+
+.calc-row-medal { font-size: 20px; }
+
+.calc-row-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  font-variation-settings: "opsz" 32, "wdth" 100;
+}
+
+.calc-row-percent {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.calc-row.current .calc-row-percent {
+  background: var(--brand-lime);
+  color: #0A0A0A;
+}
+
+.calc-row-amount {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: right;
+  letter-spacing: -0.025em;
+  font-variation-settings: "opsz" 32, "wdth" 100;
+}
+
+.calc-row[data-tier="bronze"]   { --tier-color: var(--bronze);   --tier-soft: var(--bronze-soft); }
+.calc-row[data-tier="silver"]   { --tier-color: var(--silver);   --tier-soft: var(--silver-soft); }
+.calc-row[data-tier="gold"]     { --tier-color: var(--gold);     --tier-soft: var(--gold-soft); }
+.calc-row[data-tier="platinum"] { --tier-color: var(--platinum); --tier-soft: var(--platinum-soft); }
+
+/* === HISTORY === */
+.history {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.history-item.now {
+  border-color: var(--brand-lime);
+  background: var(--brand-lime);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.history-medal { font-size: 14px; }
+
+/* === FOOTER BRAND BLOCK === */
+.footer-brand {
+  margin-top: 80px;
+  background: var(--brand-lime);
+  border-radius: 20px;
+  padding: 32px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-brand::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  right: -80px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(10,10,10,0.15);
+}
+
+.footer-brand-text {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text-primary);
+  position: relative;
+  z-index: 1;
+  font-variation-settings: "opsz" 32, "wdth" 100;
+}
+
+.footer-brand-text em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+.footer-brand-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  font-weight: 700;
+  text-align: right;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-brand-meta div:last-child {
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* === ADMIN MODAL === */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.admin-modal.open { display: flex; }
+
+.admin-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  padding: 36px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 32px 80px -20px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.admin-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 36px;
+  right: 36px;
+  height: 4px;
+  background: var(--brand-lime);
+  border-radius: 0 0 4px 4px;
+}
+
+.admin-panel h3 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: -0.03em;
+  font-variation-settings: "opsz" 36, "wdth" 100;
+}
+
+.admin-panel p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.admin-field { margin-bottom: 16px; }
+.admin-field.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.admin-field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.admin-field input,
+.admin-field select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.admin-field input:focus,
+.admin-field select:focus {
+  border-color: var(--brand-lime);
+  box-shadow: 0 0 0 3px var(--gold-soft);
+}
+
+.admin-actions { display: flex; gap: 12px; margin-top: 28px; }
+
+.admin-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 700;
+}
+
+.admin-btn:hover { border-color: var(--text-primary); }
+.admin-btn.primary {
+  background: var(--brand-lime);
+  color: var(--text-primary);
+  border-color: var(--brand-lime);
+}
+.admin-btn.primary:hover {
+  background: var(--brand-lime-dark);
+  border-color: var(--brand-lime-dark);
+}
+
+@media (max-width: 768px) {
+  .container { padding: 24px 16px 60px; }
+  .header { margin-bottom: 24px; }
+  .hero { padding: 80px 24px 56px; margin-bottom: 48px; border-radius: 20px; }
+  .hero-stamp { top: 16px; right: 16px; padding: 6px 10px; font-size: 9px; }
+  .section { margin-bottom: 48px; }
+  .tier-grid { grid-template-columns: repeat(2, 1fr); }
+  .calc-row { grid-template-columns: 24px 1fr auto; }
+  .calc-row-percent { display: none; }
+  .calculator { padding: 24px; }
+  .footer-brand { padding: 24px; flex-direction: column; align-items: flex-start; text-align: left; }
+  .footer-brand-meta { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="brand-strip"></div>
+
+<div class="container">
+
+  <header class="header">
+    <div class="brand">
+      <span class="brand-logo">v</span>
+      <div class="brand-text">
+        <span class="brand-name">Vira Games</span>
+        <span class="brand-sub">AMZ · <span id="quarter-label">Q1 2026</span></span>
+      </div>
+    </div>
+    <button class="admin-toggle" onclick="openAdmin()">Admin</button>
+  </header>
+
+  <section class="hero" id="hero" data-tier="silver">
+    <div class="hero-stamp">Live · Vira Games</div>
+
+    <svg class="hero-decoration top-left" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="140" cy="140" r="120" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+      <circle cx="140" cy="140" r="80" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+      <circle cx="220" cy="60" r="6" fill="currentColor" opacity="0.5"/>
+    </svg>
+    <svg class="hero-decoration bottom-right" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="160" cy="160" r="140" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+      <path d="M 30 160 Q 30 30 160 30" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+      <circle cx="100" cy="240" r="8" fill="currentColor" opacity="0.4"/>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-label">Current achievement</div>
+      <div class="hero-medal" id="hero-medal">🥈</div>
+      <h1 class="hero-tier-name" id="hero-tier-name">Silver</h1>
+      <div class="hero-meta">
+        Unlocked <b id="hero-date">14 Mar 2026</b>
+        <span class="hero-meta-divider">·</span>
+        Toward <b id="hero-next">Gold</b>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div class="section-marker">
+        <div class="section-title">Progress · next milestone</div>
+      </div>
+      <div class="section-divider"></div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-label">Toward <em id="progress-target">Gold</em></div>
+      <div class="progress-meta"><b id="days-left">47</b> days left in quarter</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div class="section-marker">
+        <div class="section-title">Tier ladder</div>
+      </div>
+      <div class="section-divider"></div>
+    </div>
+    <div class="tier-grid" id="tier-grid"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div class="section-marker">
+        <div class="section-title">Your projected bonus</div>
+      </div>
+      <div class="section-divider"></div>
+    </div>
+    <div class="calculator">
+      <div class="calc-input-group">
+        <label class="calc-input-label" for="salary-input">Monthly salary</label>
+        <div class="calc-input-wrap">
+          <span class="calc-input-prefix">$</span>
+          <input type="number" class="calc-input" id="salary-input" placeholder="2000" value="2000" oninput="updateCalc()" min="0">
+        </div>
+      </div>
+      <div class="calc-hint">Bonus is calculated on quarterly base: <b>monthly × 3 months × tier %</b></div>
+      <div class="calc-rows" id="calc-rows"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div class="section-marker">
+        <div class="section-title">Quarter history</div>
+      </div>
+      <div class="section-divider"></div>
+    </div>
+    <div class="history" id="history"></div>
+  </section>
+
+  <div class="footer-brand">
+    <div class="footer-brand-text">
+      Built for the AMZ team.<br>
+      <em>Powered by results.</em>
+    </div>
+    <div class="footer-brand-meta">
+      <div>Vira Games · Internal</div>
+      <div>Updated monthly</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="admin-modal" id="admin-modal">
+  <div class="admin-panel">
+    <h3>Update tier state</h3>
+    <p>Changes are visible to everyone viewing this tracker.</p>
+
+    <div class="admin-field row">
+      <div>
+        <label>Quarter</label>
+        <input type="text" id="adm-quarter" placeholder="Q1 2026">
+      </div>
+      <div>
+        <label>Current tier</label>
+        <select id="adm-tier">
+          <option value="none">None yet</option>
+          <option value="bronze">🥉 Bronze</option>
+          <option value="silver">🥈 Silver</option>
+          <option value="gold">🥇 Gold</option>
+          <option value="platinum">💎 Platinum</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="admin-field row">
+      <div>
+        <label>Progress to next %</label>
+        <input type="number" id="adm-progress" min="0" max="100" placeholder="60">
+      </div>
+      <div>
+        <label>Days left in Q</label>
+        <input type="number" id="adm-days" min="0" placeholder="47">
+      </div>
+    </div>
+
+    <div class="admin-field">
+      <label>Tier achievement date</label>
+      <input type="text" id="adm-date" placeholder="14 Mar 2026">
+    </div>
+
+    <div class="admin-actions">
+      <button class="admin-btn" onclick="closeAdmin()">Cancel</button>
+      <button class="admin-btn primary" onclick="saveAdmin()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TIERS = [
+  { id: 'bronze',   name: 'Bronze',   medal: '🥉', percent: 10, color: '#FFAB40', soft: 'rgba(255, 171, 64, 0.18)' },
+  { id: 'silver',   name: 'Silver',   medal: '🥈', percent: 15, color: '#78909C', soft: 'rgba(120, 144, 156, 0.15)' },
+  { id: 'gold',     name: 'Gold',     medal: '🥇', percent: 20, color: '#EEFF41', soft: 'rgba(238, 255, 65, 0.30)' },
+  { id: 'platinum', name: 'Platinum', medal: '💎', percent: 25, color: '#4285F4', soft: 'rgba(66, 133, 244, 0.18)' },
+];
+
+let state = {
+  quarter: 'Q1 2026',
+  currentTier: 'silver',
+  progress: 62,
+  daysLeft: 47,
+  unlockedDate: '14 Mar 2026',
+  history: [
+    { quarter: 'Q4 2025', tier: 'silver' },
+    { quarter: 'Q3 2025', tier: 'gold' },
+    { quarter: 'Q2 2025', tier: 'bronze' },
+    { quarter: 'Q1 2025', tier: 'silver' },
+  ]
+};
+
+function tierById(id) { return TIERS.find(t => t.id === id); }
+function tierIdx(id) { return TIERS.findIndex(t => t.id === id); }
+function nextTier(id) {
+  const i = tierIdx(id);
+  if (i < 0 || i >= TIERS.length - 1) return null;
+  return TIERS[i + 1];
+}
+
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('tier')) state.currentTier = params.get('tier');
+  if (params.has('progress')) state.progress = parseInt(params.get('progress'));
+  if (params.has('quarter')) state.quarter = params.get('quarter');
+  if (params.has('days')) state.daysLeft = parseInt(params.get('days'));
+  if (params.has('date')) state.unlockedDate = params.get('date');
+}
+
+async function loadFromStorage() {
+  if (typeof window.storage === 'undefined') return;
+  try {
+    const result = await window.storage.get('amz-tier-state', true);
+    if (result && result.value) {
+      const saved = JSON.parse(result.value);
+      state = { ...state, ...saved };
+    }
+  } catch (e) { /* no state yet */ }
+}
+
+async function saveToStorage() {
+  if (typeof window.storage === 'undefined') return;
+  try {
+    await window.storage.set('amz-tier-state', JSON.stringify(state), true);
+  } catch (e) { console.error('Storage save failed:', e); }
+}
+
+function render() {
+  const current = tierById(state.currentTier);
+  const next = nextTier(state.currentTier);
+  const currentIdx = tierIdx(state.currentTier);
+
+  if (current) {
+    document.documentElement.style.setProperty('--current-color', current.color);
+    document.documentElement.style.setProperty('--current-soft', current.soft);
+  }
+
+  document.getElementById('quarter-label').textContent = state.quarter;
+
+  const hero = document.getElementById('hero');
+  hero.dataset.tier = state.currentTier;
+  if (current) {
+    document.getElementById('hero-medal').textContent = current.medal;
+    document.getElementById('hero-tier-name').textContent = current.name;
+    document.getElementById('hero-date').textContent = state.unlockedDate;
+    document.getElementById('hero-next').textContent = next ? next.name : 'maintaining peak';
+  } else {
+    document.getElementById('hero-medal').textContent = '◇';
+    document.getElementById('hero-tier-name').textContent = 'Pending';
+    document.getElementById('hero-date').textContent = '—';
+    document.getElementById('hero-next').textContent = 'Bronze';
+  }
+
+  document.getElementById('progress-target').textContent = next ? next.name : (current?.name || 'next tier');
+  document.getElementById('days-left').textContent = state.daysLeft;
+  setTimeout(() => {
+    document.getElementById('progress-fill').style.width = `${state.progress}%`;
+  }, 50);
+
+  const grid = document.getElementById('tier-grid');
+  grid.innerHTML = '';
+  TIERS.forEach((tier, idx) => {
+    const card = document.createElement('div');
+    card.className = 'tier-card';
+    card.dataset.tier = tier.id;
+    let status = '— Locked';
+    if (idx < currentIdx) { card.classList.add('achieved'); status = '✓ Achieved'; }
+    else if (idx === currentIdx) { card.classList.add('current', 'achieved'); status = '◆ Current'; }
+    else if (idx === currentIdx + 1) { status = '◇ Next milestone'; }
+    else { card.classList.add('locked'); status = '— Locked'; }
+
+    card.innerHTML = `
+      <div class="tier-card-accent"></div>
+      <div class="tier-card-medal">${tier.medal}</div>
+      <div class="tier-card-name">${tier.name}</div>
+      <div class="tier-card-status">${status}</div>
+      <div class="tier-card-reward"><b>${tier.percent}%</b> of monthly salary</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  updateCalc();
+
+  const histEl = document.getElementById('history');
+  histEl.innerHTML = '';
+  if (current) {
+    const nowItem = document.createElement('div');
+    nowItem.className = 'history-item now';
+    nowItem.innerHTML = `<span class="history-medal">${current.medal}</span><span>${state.quarter} · Now</span>`;
+    histEl.appendChild(nowItem);
+  }
+  state.history.forEach(h => {
+    const tier = tierById(h.tier);
+    if (!tier) return;
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `<span class="history-medal">${tier.medal}</span><span>${h.quarter}</span>`;
+    histEl.appendChild(item);
+  });
+}
+
+function updateCalc() {
+  const salary = parseFloat(document.getElementById('salary-input').value) || 0;
+  const rows = document.getElementById('calc-rows');
+  rows.innerHTML = '';
+  TIERS.forEach(tier => {
+    const row = document.createElement('div');
+    row.className = 'calc-row';
+    row.dataset.tier = tier.id;
+    if (tier.id === state.currentTier) row.classList.add('current');
+    const bonus = Math.round(salary * 3 * tier.percent / 100);
+    row.innerHTML = `
+      <span class="calc-row-medal">${tier.medal}</span>
+      <span class="calc-row-name">${tier.name}</span>
+      <span class="calc-row-percent">+${tier.percent}%</span>
+      <span class="calc-row-amount">$${bonus.toLocaleString()}</span>
+    `;
+    rows.appendChild(row);
+  });
+}
+
+function openAdmin() {
+  document.getElementById('adm-quarter').value = state.quarter;
+  document.getElementById('adm-tier').value = state.currentTier;
+  document.getElementById('adm-progress').value = state.progress;
+  document.getElementById('adm-days').value = state.daysLeft;
+  document.getElementById('adm-date').value = state.unlockedDate;
+  document.getElementById('admin-modal').classList.add('open');
+}
+
+function closeAdmin() {
+  document.getElementById('admin-modal').classList.remove('open');
+}
+
+async function saveAdmin() {
+  state.quarter = document.getElementById('adm-quarter').value || state.quarter;
+  state.currentTier = document.getElementById('adm-tier').value;
+  state.progress = Math.max(0, Math.min(100, parseInt(document.getElementById('adm-progress').value) || 0));
+  state.daysLeft = Math.max(0, parseInt(document.getElementById('adm-days').value) || 0);
+  state.unlockedDate = document.getElementById('adm-date').value || state.unlockedDate;
+  await saveToStorage();
+  render();
+  closeAdmin();
+}
+
+document.getElementById('admin-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'admin-modal') closeAdmin();
+});
+
+async function init() {
+  await loadFromStorage();
+  loadFromURL();
+  render();
+}
+
+init();
+</script>
+
+</body>
+</html>
